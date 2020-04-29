@@ -1,0 +1,216 @@
+ids:
+  show: true
+  input_type: selectizeInput
+  input_params:
+    label: Categories column
+    choices: reactive__ids
+  update_param: selected
+states:
+  show: true
+  input_type: selectizeInput
+  input_params:
+    label: States column
+    choices: reactive__states
+  update_param: selected
+values:
+  show: true
+  input_type: selectizeInput
+  input_params:
+    label: Values column
+    choices: reactive__values
+  update_param: selected
+periodicity:
+  show: true
+  input_type: radioButtons
+  input_params:
+    label: Periodicity
+    choices:
+      Yearly:
+      - y
+      Monthly:
+      - m
+      Daily:
+      - d
+    inline: true
+  update_param: selected
+nframes:
+  show: true
+  input_type: sliderInput
+  input_params:
+    label: Number of frames
+    min: 1
+    max: 300
+    value: 100
+    step: 1
+fps:
+  show: true
+  input_type: sliderInput
+  input_params:
+    label: Frames per second
+    min: 1
+    max: 20
+    value: 10
+    step: 1
+duration:
+  show: true
+  input_type: sliderInput
+  input_params:
+    label: Duration in seconds
+    min: 0
+    max: 100
+    value: 20
+    step: 1
+width:
+  show: true
+  input_type: sliderInput
+  input_params:
+    label: Width
+    min: 10
+    max: 1000
+    value: 300
+    step: 5
+height:
+  show: true
+  input_type: sliderInput
+  input_params:
+    label: Height
+    min: 10
+    max: 1000
+    value: 300
+    step: 5
+title:
+  show: true
+  input_type: textInput
+  input_params:
+    label: Title
+    value: ''
+subtitle:
+  show: true
+  input_type: textInput
+  input_params:
+    label: Subtitle
+    value: ''
+horLabel:
+  show: true
+  input_type: textInput
+  input_params:
+    label: X axis label
+    value: null 
+verLabel:
+  show: true
+  input_type: textInput
+  input_params:
+    label: Y axis label
+    value: null
+caption:
+  show: true
+  input_type: textInput
+  input_params:
+    label: Caption
+    value: ''
+marks:
+  show: true
+  input_type: selectizeInput
+  input_params:
+    label: Numbers marks
+    choices:
+      '12,345.00':
+      - ",&."
+      12.345.00:
+      - ".&,"
+      '12345.00':
+      - "&."
+      '12345,00':
+      - "&,"
+      12 345.00:
+      - " &."
+      12 345,00:
+      - " &,"
+    selected: ",&."
+n_digits:
+  show: true
+  input_type: numericInput
+  input_params:
+    label: Decimal digits
+    value: 2
+    min: 1
+    max: 13
+suffix:
+  show: true
+  input_type: textInput
+  input_params:
+    label: Suffix
+    value: ''
+prefix:
+  show: true
+  input_type: textInput
+  input_params:
+    label: Prefix
+    value: ''
+legend_show:
+  show: true
+  input_type: checkboxInput
+  input_params:
+    label: Show legend
+    value: true
+legend_position:
+  show: true
+  show_if: 
+    legend_show:
+     equals: true
+  input_type: selectizeInput
+  input_params:
+    label: Legend position
+    choices:
+      Bottom left:
+      - bottomleft
+      Bottom right:
+      - bottomright
+      Top left:
+      - topleft
+      Top right:
+      - topright
+    selected: bottomleft
+  update_param: selected
+orientation:
+  show: true
+  input_type: selectizeInput
+  input_params:
+    label: Orientation
+    choices:
+      Horizotal:
+      - hor
+      Vertical:
+      - ver
+    selected: hor
+background:
+  show: true
+  input_type: selectizeInput
+  input_params:
+    label: Background
+    choices: 
+      White:
+      - #ffffff
+      Green:
+      - #ff00ff
+      Yellow:
+      - yellow
+text_show:
+  show: true
+  input_type: checkboxInput
+  input_params:
+    label: Show text
+    value: true
+theme:
+  show: true
+  input_type: selectizeInput
+  input_params:
+    label: Theme
+    choices:
+      Clasic:
+      - clasic
+      Dark:
+      - dark
+      Gray:
+      - gray
+    selected: clasic

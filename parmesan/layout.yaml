@@ -1,0 +1,42 @@
+variables:
+  label: Variables
+  inputs:
+    - ids
+    - values
+    - states
+frames:
+  label: Frames
+  inputs:
+    - periodicity
+    - nframes
+    - fps
+    - duration
+    - width
+    - height
+titles:
+  label: Titles
+  inputs:
+    - title
+    - subtitle
+    - horLabel
+    - verLabel
+    - caption
+numbers_format:
+  label: Numbers format
+  inputs:
+    - marks
+    - n_digits
+    - prefix
+    - suffix
+legend:
+  label: Legend
+  inputs:
+  - legend_show
+  #- legend_position
+styles:
+  label: Styles
+  inputs:
+    - orientation
+    - background
+    - text_show
+    - theme
