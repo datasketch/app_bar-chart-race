@@ -1,0 +1,48 @@
+upload_data: Upload data
+dataset: Dataset
+options: Options
+viz: Viz
+sample: Sample data
+sample_lb: Select a sample data
+paste: Copy & paste
+paste_pl: Copy and paste it here
+upload: CSX/XLS upload  
+upload_lb: Choose CSV/XLS file
+upload_bt_lb: Browse...
+upload_pl: No file selected
+google: Google sheets
+google_sh_lb: Data from Google Sheet
+google_sh_pl: https://docs.google.com/spreadsheets/...
+google_sh_pg_lb: Sheet
+variables: Variables
+frames: Frames
+titles: Titles
+numbers_format: Numbers format
+legend: Legend
+styles: Styles
+ids: Categories column
+values: Values column
+states: States column
+periodicity: Periodicity
+nframes: Number of frames
+fps: Frames per second
+duration: Duration in seconds
+width: Width
+height: Height
+title: Title
+subtitle: Subtitle
+horLabel: X axis label
+verLabel: Y axis label
+caption: Caption
+marks: Numbers marks
+n_digits: Decimal digits
+prefix: Prefix
+suffix: Suffix
+legend_show: Show legend
+orientation: Orientation
+background: Background
+text_show: Show datalabels
+y_labels_show: Show y axis values
+theme: Theme
+generate: Generate
+download_plot: Download plot

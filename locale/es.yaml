@@ -1,0 +1,48 @@
+upload_data: Subir datos
+dataset: Datos
+options: Opciones
+viz: Vizualización
+sample: Datos de muestra
+sample_lb: Selecciona datos de muestra
+paste: Copiar & pegar
+paste_pl: Copia y pega aquí
+upload: Subir CSX/XLS
+upload_lb: Escoje archivo CSV/XLS
+upload_bt_lb: Examinar...
+upload_pl: Ningún archivo seleccionado
+google: Google sheets
+google_sh_lb: Datos desde Google Sheet
+google_sh_pl: https://docs.google.com/spreadsheets/...
+google_sh_pg_lb: Hoja
+variables: Variables
+frames: Cuadros
+titles: Títulos
+numbers_format: Formato de números
+legend: Leyenda
+styles: Estilos
+ids: Categorías
+values: Valores
+states: Tiempo
+periodicity: Periodicidad
+nframes: Número de cuadros
+fps: Cuadros por segundo
+duration: Duración en segundos
+width: Ancho
+height: Alto
+title: Título
+subtitle: Subtítulo
+horLabel: Título eje horizontal
+verLabel: Título eje vertical
+caption: Nota al pie
+marks: Separador de miles
+n_digits: Separador decimales
+prefix: Prefijo
+suffix: Sufijo
+legend_show: Mostrar leyenda
+orientation: Orientación
+background: Color de fondo
+text_show: Mostrar valores
+y_labels_show: Mostrar valores
+theme: Tema
+generate: Generar
+download_plot: Descargar gráfica

@@ -2,28 +2,28 @@ ids:
   show: true
   input_type: selectizeInput
   input_params:
-    label: Categories column
-    choices: reactive__ids
+    label: ids
+    choices: ids()
   update_param: selected
 states:
   show: true
   input_type: selectizeInput
   input_params:
-    label: States column
-    choices: reactive__states
+    label: states
+    choices: states()
   update_param: selected
 values:
   show: true
   input_type: selectizeInput
   input_params:
-    label: Values column
-    choices: reactive__values
+    label: values
+    choices: values()
   update_param: selected
 periodicity:
   show: true
   input_type: radioButtons
   input_params:
-    label: Periodicity
+    label: periodicity
     choices:
       Yearly:
       - y
@@ -37,34 +37,34 @@ nframes:
   show: true
   input_type: sliderInput
   input_params:
-    label: Number of frames
+    label: nframes
     min: 1
-    max: 300
-    value: 100
+    max: 50
+    value: 10
     step: 1
 fps:
   show: true
   input_type: sliderInput
   input_params:
-    label: Frames per second
+    label: fps
     min: 1
     max: 20
-    value: 10
+    value: 8  
     step: 1
 duration:
   show: true
   input_type: sliderInput
   input_params:
-    label: Duration in seconds
+    label: duration
     min: 0
-    max: 100
-    value: 20
+    max: 25
+    value: 5
     step: 1
 width:
   show: true
   input_type: sliderInput
   input_params:
-    label: Width
+    label: width
     min: 10
     max: 1000
     value: 300
@@ -73,7 +73,7 @@ height:
   show: true
   input_type: sliderInput
   input_params:
-    label: Height
+    label: height
     min: 10
     max: 1000
     value: 300
@@ -82,37 +82,37 @@ title:
   show: true
   input_type: textInput
   input_params:
-    label: Title
+    label: title
     value: ''
 subtitle:
   show: true
   input_type: textInput
   input_params:
-    label: Subtitle
+    label: subtitle
     value: ''
 horLabel:
   show: true
   input_type: textInput
   input_params:
-    label: X axis label
+    label: horLabel
     value: null 
 verLabel:
   show: true
   input_type: textInput
   input_params:
-    label: Y axis label
+    label: verLabel
     value: null
 caption:
   show: true
   input_type: textInput
   input_params:
-    label: Caption
+    label: caption
     value: ''
 marks:
   show: true
   input_type: selectizeInput
   input_params:
-    label: Numbers marks
+    label: marks
     choices:
       '12,345.00':
       - ",&."
@@ -131,7 +131,7 @@ n_digits:
   show: true
   input_type: numericInput
   input_params:
-    label: Decimal digits
+    label: n_digits
     value: 2
     min: 1
     max: 13
@@ -139,19 +139,19 @@ suffix:
   show: true
   input_type: textInput
   input_params:
-    label: Suffix
+    label: suffix
     value: ''
 prefix:
   show: true
   input_type: textInput
   input_params:
-    label: Prefix
+    label: prefix
     value: ''
 legend_show:
   show: true
   input_type: checkboxInput
   input_params:
-    label: Show legend
+    label: legend_show
     value: true
 legend_position:
   show: true
@@ -160,7 +160,7 @@ legend_position:
      equals: true
   input_type: selectizeInput
   input_params:
-    label: Legend position
+    label: position_legend
     choices:
       Bottom left:
       - bottomleft
@@ -174,41 +174,50 @@ legend_position:
   update_param: selected
 orientation:
   show: true
-  input_type: selectizeInput
+  input_type: radioButtons
   input_params:
-    label: Orientation
+    label: orientation
     choices:
       Horizotal:
       - hor
       Vertical:
       - ver
+    inline: true
     selected: hor
 background:
   show: true
   input_type: selectizeInput
   input_params:
-    label: Background
+    label: background
     choices: 
       White:
-      - #ffffff
+      - white
       Green:
-      - #ff00ff
+      - green
       Yellow:
       - yellow
 text_show:
   show: true
   input_type: checkboxInput
   input_params:
-    label: Show text
+    label: text_show
+    value: true
+y_labels_show:
+  show: true
+  input_type: checkboxInput
+  input_params:
+    label: y_labels_show
     value: true
 theme:
   show: true
   input_type: selectizeInput
   input_params:
-    label: Theme
+    label: theme
     choices:
-      Clasic:
-      - clasic
+      Datasketch:
+      - ds
+      Classic:
+      - classic
       Dark:
       - dark
       Gray:
