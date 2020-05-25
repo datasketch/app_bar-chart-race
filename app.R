@@ -9,7 +9,8 @@ library(tidyverse)
 library(homodatum)
 library(gganimate)
 library(gifski)
-library(ggmagic)
+
+
 
 ui <- panelsPage(includeScript(paste0(system.file("aux/", package = "dsmodules"), "downloadGen.js")),
                  useShi18ny(),
@@ -41,6 +42,7 @@ ui <- panelsPage(includeScript(paste0(system.file("aux/", package = "dsmodules")
                                                      title = ui_("download_plot"),
                                                      uiOutput("modal"))),
                        footer = shinypanels::modalButton(label = "Download plot", modal_id = "download")))
+
 
 
 server <- function(input, output, session) {
@@ -180,8 +182,8 @@ server <- function(input, output, session) {
   observeEvent(input$generate, {
     session$sendCustomMessage("setButtonState", c("none", "downloadGif"))
     session$sendCustomMessage("setButtonState", c("loading", "generate_bt"))
-    vl <- rep(c("#3DB26F", "#FECA84", "#74D1F7", "#F75E64", "#8097A4", "#B70F7F", "#5D6AE9", "#53255E", "#BDCAD1"), 3)[seq_along(unique(dt1$a))]
-    names(vl) <- unique(dt1$a)
+    vl <- rep(c("#3DB26F", "#FECA84", "#74D1F7", "#F75E64", "#8097A4", "#B70F7F", "#5D6AE9", "#53255E", "#BDCAD1"), 3)[seq_along(unique(dt_ready()$a))]
+    names(vl) <- unique(dt_ready()$a)
     cl <- ifelse(input$text_show, "black", "transparent")
     tl <- gsub("\\n", "\n", input$title, fixed = TRUE)
     st <- input$states_text %||% input$states
@@ -195,8 +197,80 @@ server <- function(input, output, session) {
       # geom_text(aes(x = 1, y = 18.75, label = "Month: {closest_state}")) +
       # scale_y_continuous(labels = scales::comma) +
       # scale_x_reverse() +
-      guides(color = FALSE, fill = FALSE) +
-      do.call(paste0("theme_", input$theme), list()) +
+      guides(color = FALSE, fill = FALSE) 
+    if (input$theme == "ds") {
+      type <- "outer"
+      inner <- type == "inner"
+      palette <- list(background = "#ffffff", 
+                      text = list(inner = "#555555", outer = "#111111"), 
+                      line = list(inner = "#826A50", outer = "#362C21"), 
+                      gridline = "#c9c7d3", 
+                      swatch = c("#111111", "#65ADC2", "#233B43", "#E84646", "#C29365",
+                               "#362C21", "#316675", "#168E7F", "#109B37"),
+                      gradient = list(low = "#65ADC2", high = "#362C21"))
+      spacing <- 0.5
+      line_colour <- "#1d1d1d"
+      text_colour <- "#555555"
+      text_size <- 12
+      line_weight <- 0.5
+      x_title_spacing <- function(spacing) max(-1.2, -(spacing/1.25) + 0.5)
+      y_title_spacing <- function(spacing) max(0.8, min(2.4, spacing))
+      g0 <- g0 +
+      theme(line = element_line(colour = line_colour, size = line_weight, linetype = 1, lineend = "butt"), 
+            rect = element_rect(fill = "white", colour = text_colour, size = 0.5, linetype = 1), 
+            text = element_text(debug = FALSE, margin = margin(), family = "", face = "plain", colour = text_colour, 
+                                size = text_size, hjust = 0.5, vjust = 0.5, angle = 0, lineheight = 0.9), 
+            axis.text = element_text(debug = FALSE, margin = margin(), size = rel(0.8), colour = text_colour), 
+            strip.text = element_text(debug = FALSE, margin = margin(), size = rel(0.8)), axis.line = element_line(colour = line_colour), 
+            axis.line.x = element_line(colour = line_colour), axis.line.y = element_line(colour = line_colour), 
+            axis.text.x = element_text(debug = FALSE, margin = margin(0.1 * spacing, 0.1 * spacing, 0.1 * spacing, 0.1 * spacing, unit = "cm"), 
+                                       vjust = 1, colour = text_colour, face = "bold"), 
+            axis.text.y = element_text(debug = FALSE, margin = margin(0.1 * spacing, 0.1 * spacing, 0.1 * spacing, 0.1 * spacing, unit = "cm"), 
+                                       hjust = 1, colour = text_colour, face = "bold"), 
+            axis.ticks = element_line(colour = line_colour), axis.title = element_text(face = "bold", colour = text_colour), 
+            axis.title.x = element_text(debug = FALSE, margin = margin(), vjust = x_title_spacing(spacing)), 
+            axis.title.y = element_text(debug = FALSE, margin = margin(), angle = 90, vjust = y_title_spacing(spacing)),
+            axis.ticks.length = grid::unit(0.15, "cm"), 
+            axis.ticks.length.x.bottom = grid::unit(0.15, "cm"), 
+            axis.ticks.length.x.top = grid::unit(0.15, "cm"),
+            axis.ticks.length.y.left = grid::unit(0.15, "cm"), 
+            axis.ticks.length.y.right = grid::unit(0.15, "cm"),
+            legend.background = element_rect(colour = ifelse(inner, "white", palette$background), fill = ifelse(inner, "white", palette$background)),
+            legend.margin = grid::unit(0.2 * spacing, "cm"), 
+            legend.key = element_rect(colour = ifelse(inner, "white", palette$background), fill = palette$background), 
+            legend.key.size = grid::unit(1.2, "lines"), 
+            legend.key.height = NULL, 
+            legend.key.width = NULL, 
+            legend.text = element_text(debug = FALSE, margin = margin(), size = rel(0.8)),
+            legend.position = "right", 
+            legend.direction = NULL,
+            legend.justification = "center", 
+            legend.box = NULL, 
+            panel.background = element_rect(fill = palette$background, colour = NA),
+            panel.border = element_blank(), 
+            panel.grid.major = element_line(linetype = "dashed", colour = palette$gridline), 
+            panel.grid.minor = element_blank(), 
+            panel.margin = grid::unit(0.5 * spacing, "cm"), 
+            panel.margin.x = NULL, 
+            panel.margin.y = NULL,
+            panel.ontop = FALSE,
+            strip.background = element_rect(fill = ifelse(inner, "white", palette$background), colour = NA),
+            strip.text.x = element_text(debug = FALSE, margin = margin(), size = rel(1.1), face = "bold"), 
+            strip.text.y = element_text(debug = FALSE, margin = margin(), angle = -90, face = "bold", size = rel(1.1)),
+            strip.switch.pad.grid = grid::unit(0, "cm"), 
+            strip.switch.pad.wrap = grid::unit(0, "cm"), 
+            plot.background = element_rect(colour = ifelse(inner, "white", palette$background), fill = ifelse(inner, "white", palette$background)),
+            plot.title = element_text(debug = FALSE, margin = margin(0, 0, 6.6, 0), size = rel(1.2), vjust = spacing, face = "bold"), 
+            plot.margin = grid::unit(c(0.625, 0.625, 0.625, 0.625) * spacing, "cm"), complete = TRUE)
+      g0 <- g0 + 
+        scale_fill_manual("legend", values = vl) +
+        theme(plot.background = element_rect(colour = input$background, fill = input$background),
+              panel.background = element_rect(fill = input$background))
+    } else {
+      g0 <- g0 +
+        do.call(paste0("theme_", input$theme), list()) 
+    }
+    g0 <- g0 +
       theme(#axis.text.x = element_blank(),
         axis.text.y = element_blank(),
         axis.ticks = element_blank(),
@@ -207,12 +281,6 @@ server <- function(input, output, session) {
         plot.subtitle = element_text(size = 16, hjust = 1, vjust = 5, color = "grey"),
         plot.caption = element_text(size = 13, hjust = 1, color = "gray"),
         plot.margin = margin(2, 2, 2, 4, "cm"))
-    if (input$theme == "ds") {
-      g0 <- g0 + 
-        scale_fill_manual("legend", values = vl) +
-        theme(plot.background = element_rect(colour = input$background, fill = input$background),
-              panel.background = element_rect(fill = input$background))
-    }
     if (!input$y_labels_show) {
       g0 <- g0 + theme(axis.text.x = element_blank())
     }
