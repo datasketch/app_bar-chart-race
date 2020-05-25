@@ -17,12 +17,13 @@ google_sh_pg_lb: Sheet
 variables: Variables
 frames: Frames
 titles: Titles
+states_text: States text
 numbers_format: Numbers format
 legend: Legend
 styles: Styles
 ids: Categories column
 values: Values column
-states: States column
+states: Stages column
 periodicity: Periodicity
 nframes: Number of frames
 fps: Frames per second
@@ -46,3 +47,14 @@ y_labels_show: Show y axis values
 theme: Theme
 generate: Generate
 download_plot: Download plot
+info_id: 'Column with the names of the "participants" of the race'
+info_st: "Column with the stages of the race"
+info_vl: 'Column with the results of the "participants" in each stage of the race'
+info_et: "Text preceding the running stages of the race"
+info_nf: "Number of frames in the race"
+info_fs: "Number of Frames per second"
+info_dr: "Length of the race in seconds"
+white: White
+red: Red
+blue: Blue
+gray: Gray

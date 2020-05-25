@@ -5,6 +5,9 @@ ids:
     label: ids
     choices: ids()
   update_param: selected
+  input_info:
+    icon: info-circle
+    text: info_id
 states:
   show: true
   input_type: selectizeInput
@@ -12,6 +15,9 @@ states:
     label: states
     choices: states()
   update_param: selected
+  input_info:
+    icon: info-circle
+    text: info_st
 values:
   show: true
   input_type: selectizeInput
@@ -19,6 +25,9 @@ values:
     label: values
     choices: values()
   update_param: selected
+  input_info:
+    icon: info-circle
+    text: info_vl
 periodicity:
   show: true
   input_type: radioButtons
@@ -42,6 +51,9 @@ nframes:
     max: 50
     value: 10
     step: 1
+  input_info:
+    icon: info-circle
+    text: info_nf
 fps:
   show: true
   input_type: sliderInput
@@ -51,6 +63,9 @@ fps:
     max: 20
     value: 8  
     step: 1
+  input_info:
+    icon: info-circle
+    text: info_fs  
 duration:
   show: true
   input_type: sliderInput
@@ -60,6 +75,9 @@ duration:
     max: 25
     value: 5
     step: 1
+  input_info:
+    icon: info-circle
+    text: info_dr
 width:
   show: true
   input_type: sliderInput
@@ -84,6 +102,15 @@ title:
   input_params:
     label: title
     value: ''
+states_text:
+  show: true
+  input_type: textInput
+  input_params:
+    label: states_text
+    value: ''
+  input_info:
+    icon: info-circle
+    text: info_et
 subtitle:
   show: true
   input_type: textInput
@@ -132,9 +159,9 @@ n_digits:
   input_type: numericInput
   input_params:
     label: n_digits
-    value: 2
+    value: 4
     min: 1
-    max: 13
+    max: 8
 suffix:
   show: true
   input_type: textInput
@@ -191,11 +218,14 @@ background:
     label: background
     choices: 
       White:
-      - white
-      Green:
-      - green
-      Yellow:
-      - yellow
+      - white 
+      Red:
+      - red 
+      Blue:
+      - blue
+      Gray:
+      - gray 
+    selected: white
 text_show:
   show: true
   input_type: checkboxInput

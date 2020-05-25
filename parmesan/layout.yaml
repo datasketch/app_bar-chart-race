@@ -4,14 +4,6 @@ variables:
     - ids
     - values
     - states
-titles:
-  label: titles
-  inputs:
-    - title
-    # - subtitle
-    # - horLabel
-    # - verLabel
-    - caption
 styles:
   label: styles
   inputs:
@@ -20,11 +12,20 @@ styles:
     - y_labels_show
     - background
     - theme
+titles:
+  label: titles
+  inputs:
+    - title
+    - states_text
+    # - subtitle
+    # - horLabel
+    # - verLabel
+    - caption
 numbers_format:
   label: numbers_format
   inputs:
     - marks
-    - n_digits
+    #- n_digits
     - prefix
     - suffix
 # legend:
@@ -37,7 +38,7 @@ frames:
   inputs:
 #    - periodicity
     - nframes
-    - fps
+#    - fps
     - duration
     # - width
     # - height
