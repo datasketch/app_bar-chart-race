@@ -1,6 +1,6 @@
 library(shinypanels)
 library(parmesan)
-library(shinyinvoer)
+# library(shinyinvoer)
 library(shi18ny)
 library(V8)
 library(dsmodules)
@@ -9,6 +9,7 @@ library(tidyverse)
 library(homodatum)
 library(gganimate)
 library(gifski)
+library(magick)
 
 
 
@@ -47,11 +48,9 @@ ui <- panelsPage(includeScript(paste0(system.file("aux/", package = "dsmodules")
 
 server <- function(input, output, session) {
   
-  i18n <- list(defaultLang = "en", availableLangs = c("es", "en", "pt"))
+  i18n <- list(defaultLang = "en", availableLangs = c("es", "en", "pt_BR"))
   lang <- callModule(langSelector, "lang", i18n = i18n, showSelector = TRUE)
-  observeEvent(lang(), {
-    uiLangUpdate(input$shi18ny_ui_classes, lang())
-  })  
+  observeEvent(lang(), {uiLangUpdate(input$shi18ny_ui_classes, lang())})  
   
   output$table_input <- renderUI({
     choices <- c("sampleData", "pasted", "fileUpload", "googleSheets")
@@ -61,42 +60,25 @@ server <- function(input, output, session) {
                  selected = ifelse(is.null(input$`initial_data-tableInput`), "sampleData", input$`initial_data-tableInput`))
   })
   
-  brchr <- reactiveValues(pth = NULL,
-                          an = NULL)
-  
-  path <- "parmesan"
-  parmesan <- parmesan_load(path)
-  parmesan_input <- parmesan_watch(input, parmesan)
-  parmesan_alert(parmesan, env = environment())
-  parmesan_lang <- reactive({i_(parmesan, lang(), keys = c("label", "choices", "text"))})
-  output_parmesan("controls", 
-                  parmesan = parmesan_lang,
-                  input = input,
-                  output = output, 
-                  env = environment())
-  
-  output$generate_bt <- renderUI({
-    gn <- i_("generate", lang())
-    actionButton("generate", gn, style = "margin: 0;")
-  }) 
-  
-  output$modal <- renderUI({
-    dw <- i_("download", lang())
-    loadingGif <- "data:image/gif;base64,R0lGODlhEAALAPQAAP///wAAANra2tDQ0Orq6gYGBgAAAC4uLoKCgmBgYLq6uiIiIkpKSoqKimRkZL6+viYmJgQEBE5OTubm5tjY2PT09Dg4ONzc3PLy8ra2tqCgoMrKyu7u7gAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCwAAACwAAAAAEAALAAAFLSAgjmRpnqSgCuLKAq5AEIM4zDVw03ve27ifDgfkEYe04kDIDC5zrtYKRa2WQgAh+QQJCwAAACwAAAAAEAALAAAFJGBhGAVgnqhpHIeRvsDawqns0qeN5+y967tYLyicBYE7EYkYAgAh+QQJCwAAACwAAAAAEAALAAAFNiAgjothLOOIJAkiGgxjpGKiKMkbz7SN6zIawJcDwIK9W/HISxGBzdHTuBNOmcJVCyoUlk7CEAAh+QQJCwAAACwAAAAAEAALAAAFNSAgjqQIRRFUAo3jNGIkSdHqPI8Tz3V55zuaDacDyIQ+YrBH+hWPzJFzOQQaeavWi7oqnVIhACH5BAkLAAAALAAAAAAQAAsAAAUyICCOZGme1rJY5kRRk7hI0mJSVUXJtF3iOl7tltsBZsNfUegjAY3I5sgFY55KqdX1GgIAIfkECQsAAAAsAAAAABAACwAABTcgII5kaZ4kcV2EqLJipmnZhWGXaOOitm2aXQ4g7P2Ct2ER4AMul00kj5g0Al8tADY2y6C+4FIIACH5BAkLAAAALAAAAAAQAAsAAAUvICCOZGme5ERRk6iy7qpyHCVStA3gNa/7txxwlwv2isSacYUc+l4tADQGQ1mvpBAAIfkECQsAAAAsAAAAABAACwAABS8gII5kaZ7kRFGTqLLuqnIcJVK0DeA1r/u3HHCXC/aKxJpxhRz6Xi0ANAZDWa+kEAA7AAAAAAAAAAAA"
-    div(style = "text-align: center;",
-        downloadButton("downloadGif", paste0(dw, " GIF"), style = "width: 200px; display: inline-block;"),
-        span(class = "btn-loading-container",
-             img(src = loadingGif, class = "btn-loading-indicator", style = "display: none"),
-             shiny::HTML("<i class = 'btn-done-indicator fa fa-check' style='display: none'> </i>")))
-  })
-  
   labels <- reactive({
+    sm_f <- i_(c("sample_ch_0", "sample_ch_1"), lang())
+    names(sm_f) <- i_(c("sample_ch_nm_0", "sample_ch_nm_1"), lang())
+    
     list(sampleLabel = i_("sample_lb", lang()), 
-         sampleFiles = list("Emission per capita C02" = "data/sampleData/emisiones_c02.csv", 
-                            "Tennis grand slams" = "data/sampleData/tennis_grand_slams.csv"),
-         pasteLabel = i_("paste", lang()), pasteValue = "", pastePlaceholder = i_("paste_pl", lang()), pasteRows = 5, 
-         uploadLabel = i_("upload_lb", lang()), uploadButtonLabel = i_("upload_bt_lb", lang()), uploadPlaceholder = i_("upload_pl", lang()),
-         googleSheetLabel = i_("google_sh_lb", lang()), googleSheetValue = "", googleSheetPlaceholder = i_("google_sh_pl", lang()),
+         sampleFiles = sm_f,
+         
+         pasteLabel = i_("paste", lang()),
+         pasteValue = "", 
+         pastePlaceholder = i_("paste_pl", lang()), 
+         pasteRows = 5, 
+         
+         uploadLabel = i_("upload_lb", lang()), 
+         uploadButtonLabel = i_("upload_bt_lb", lang()), 
+         uploadPlaceholder = i_("upload_pl", lang()),
+         
+         googleSheetLabel = i_("google_sh_lb", lang()), 
+         googleSheetValue = "",
+         googleSheetPlaceholder = i_("google_sh_pl", lang()),
          googleSheetPageLabel = i_("google_sh_pg_lb", lang())
          
          # infoList = list("pasted" = ("Esto es información sobre el paste"),
@@ -119,32 +101,54 @@ server <- function(input, output, session) {
   output$data_preview <- renderUI({
     req(inputData())
     suppressWarnings(hotr("hotr_input", data = inputData(), order = NULL, options = list(height = 470), enableCTypes = FALSE))
+    # suppressWarnings(hotr_fringe("hotr_input", data = inputData(), order = NULL, options = list(height = 470), enableCTypes = FALSE))
   })
+  
+  brchr <- reactiveValues(pth = NULL,
+                          an = NULL)
+  
+  path <- "parmesan"
+  parmesan <- parmesan_load(path)
+  parmesan_input <- parmesan_watch(input, parmesan)
+  parmesan_alert(parmesan, env = environment())
+  parmesan_lang <- reactive({i_(parmesan, lang(), keys = c("label", "choices", "text"))})
+  output_parmesan("controls", 
+                  parmesan = parmesan_lang,
+                  input = input,
+                  output = output, 
+                  env = environment())
+  
+  output$generate_bt <- renderUI({
+    gn <- i_("generate", lang())
+    actionButton("generate", gn, style = "margin: 0;")
+  }) 
   
   dt <- reactive({
     req(input$hotr_input)
     hotr_table(input$hotr_input)
   })
-  
+  # observe({
+  #   assign("a0", hotr_fringe(input$hotr_input, envir = globalenv())
+  # })
   # poner sólo categóricas
   ids <- reactive({
-    dt0 <- input$hotr_input$dic
-    dt0$label[dt0$ctype %in% "Cat"]
+    dt0 <- hotr_fringe(input$hotr_input)$dic
+    dt0$label[dt0$hdType %in% "Cat"]
   })
   
   # excluir la escogida en ids
   states <- reactive({
     # setdiff(names(dt()), c(input$ids, input$values))
-    dt0 <- input$hotr_input$dic
-    dt0$label[dt0$ctype %in% "Yea"]
+    dt0 <- hotr_fringe(input$hotr_input)$dic
+    dt0$label[dt0$hdType %in% "Yea"]
     # que uno pueda ponde input__ids para selected y no lo tenga que poner en un reactivo independiente
     # setdiff(names(dt()), input$ids)
   })
   
   values <- reactive({
     # setdiff(names(dt()), c(input$states, input$ids))
-    dt0 <- input$hotr_input$dic
-    dt0$label[dt0$ctype %in% "Num"]
+    dt0 <- hotr_fringe(input$hotr_input)$dic
+    dt0$label[dt0$hdType %in% "Num"]
   })
   
   dt_ready <- reactive({
@@ -187,17 +191,21 @@ server <- function(input, output, session) {
     cl <- ifelse(input$text_show, "black", "transparent")
     tl <- gsub("\\n", "\n", input$title, fixed = TRUE)
     st <- input$states_text %||% input$states
+    st <- ifelse(nzchar(st), paste0(st, ": "), st)
+    lb <- makeup_num(dt_ready()$c, input$marks, prefix = input$prefix, suffix = input$suffix)
     g0 <- ggplot(dt_ready(), aes(x = rk, y = c, fill = a)) +
       geom_bar(stat = "identity") +
       geom_bar(stat = "identity") +
       geom_text(aes(y = 0, label = a), vjust = 0.2, hjust = 1.1, size = 4) +
-      geom_text(aes(y = c, label = paste0(input$prefix, format(c, digits = input$n_digits), input$suffix), hjust = -0.1), size = 4, color = cl) +
+      # geom_text(aes(y = c, label = paste0(input$prefix, format(c, digits = input$n_digits), input$suffix), hjust = -0.1), size = 4, color = cl) +
+      geom_text(aes(y = c, hjust = -0.1), label = lb, size = 4, color = cl) +
       coord_flip(clip = "off", expand = FALSE) +
-      labs(title = tl, subtitle = paste0(st, ": {closest_state}"), caption = input$caption) +
+      labs(title = tl, subtitle = paste0(st, "{closest_state}"), caption = input$caption) +
       # geom_text(aes(x = 1, y = 18.75, label = "Month: {closest_state}")) +
       # scale_y_continuous(labels = scales::comma) +
       # scale_x_reverse() +
       guides(color = FALSE, fill = FALSE) 
+    which_num_format
     if (input$theme == "ds") {
       type <- "outer"
       inner <- type == "inner"
@@ -206,7 +214,7 @@ server <- function(input, output, session) {
                       line = list(inner = "#826A50", outer = "#362C21"), 
                       gridline = "#c9c7d3", 
                       swatch = c("#111111", "#65ADC2", "#233B43", "#E84646", "#C29365",
-                               "#362C21", "#316675", "#168E7F", "#109B37"),
+                                 "#362C21", "#316675", "#168E7F", "#109B37"),
                       gradient = list(low = "#65ADC2", high = "#362C21"))
       spacing <- 0.5
       line_colour <- "#1d1d1d"
@@ -216,52 +224,52 @@ server <- function(input, output, session) {
       x_title_spacing <- function(spacing) max(-1.2, -(spacing/1.25) + 0.5)
       y_title_spacing <- function(spacing) max(0.8, min(2.4, spacing))
       g0 <- g0 +
-      theme(line = element_line(colour = line_colour, size = line_weight, linetype = 1, lineend = "butt"), 
-            rect = element_rect(fill = "white", colour = text_colour, size = 0.5, linetype = 1), 
-            text = element_text(debug = FALSE, margin = margin(), family = "", face = "plain", colour = text_colour, 
-                                size = text_size, hjust = 0.5, vjust = 0.5, angle = 0, lineheight = 0.9), 
-            axis.text = element_text(debug = FALSE, margin = margin(), size = rel(0.8), colour = text_colour), 
-            strip.text = element_text(debug = FALSE, margin = margin(), size = rel(0.8)), axis.line = element_line(colour = line_colour), 
-            axis.line.x = element_line(colour = line_colour), axis.line.y = element_line(colour = line_colour), 
-            axis.text.x = element_text(debug = FALSE, margin = margin(0.1 * spacing, 0.1 * spacing, 0.1 * spacing, 0.1 * spacing, unit = "cm"), 
-                                       vjust = 1, colour = text_colour, face = "bold"), 
-            axis.text.y = element_text(debug = FALSE, margin = margin(0.1 * spacing, 0.1 * spacing, 0.1 * spacing, 0.1 * spacing, unit = "cm"), 
-                                       hjust = 1, colour = text_colour, face = "bold"), 
-            axis.ticks = element_line(colour = line_colour), axis.title = element_text(face = "bold", colour = text_colour), 
-            axis.title.x = element_text(debug = FALSE, margin = margin(), vjust = x_title_spacing(spacing)), 
-            axis.title.y = element_text(debug = FALSE, margin = margin(), angle = 90, vjust = y_title_spacing(spacing)),
-            axis.ticks.length = grid::unit(0.15, "cm"), 
-            axis.ticks.length.x.bottom = grid::unit(0.15, "cm"), 
-            axis.ticks.length.x.top = grid::unit(0.15, "cm"),
-            axis.ticks.length.y.left = grid::unit(0.15, "cm"), 
-            axis.ticks.length.y.right = grid::unit(0.15, "cm"),
-            legend.background = element_rect(colour = ifelse(inner, "white", palette$background), fill = ifelse(inner, "white", palette$background)),
-            legend.margin = grid::unit(0.2 * spacing, "cm"), 
-            legend.key = element_rect(colour = ifelse(inner, "white", palette$background), fill = palette$background), 
-            legend.key.size = grid::unit(1.2, "lines"), 
-            legend.key.height = NULL, 
-            legend.key.width = NULL, 
-            legend.text = element_text(debug = FALSE, margin = margin(), size = rel(0.8)),
-            legend.position = "right", 
-            legend.direction = NULL,
-            legend.justification = "center", 
-            legend.box = NULL, 
-            panel.background = element_rect(fill = palette$background, colour = NA),
-            panel.border = element_blank(), 
-            panel.grid.major = element_line(linetype = "dashed", colour = palette$gridline), 
-            panel.grid.minor = element_blank(), 
-            panel.margin = grid::unit(0.5 * spacing, "cm"), 
-            panel.margin.x = NULL, 
-            panel.margin.y = NULL,
-            panel.ontop = FALSE,
-            strip.background = element_rect(fill = ifelse(inner, "white", palette$background), colour = NA),
-            strip.text.x = element_text(debug = FALSE, margin = margin(), size = rel(1.1), face = "bold"), 
-            strip.text.y = element_text(debug = FALSE, margin = margin(), angle = -90, face = "bold", size = rel(1.1)),
-            strip.switch.pad.grid = grid::unit(0, "cm"), 
-            strip.switch.pad.wrap = grid::unit(0, "cm"), 
-            plot.background = element_rect(colour = ifelse(inner, "white", palette$background), fill = ifelse(inner, "white", palette$background)),
-            plot.title = element_text(debug = FALSE, margin = margin(0, 0, 6.6, 0), size = rel(1.2), vjust = spacing, face = "bold"), 
-            plot.margin = grid::unit(c(0.625, 0.625, 0.625, 0.625) * spacing, "cm"), complete = TRUE)
+        theme(line = element_line(colour = line_colour, size = line_weight, linetype = 1, lineend = "butt"), 
+              rect = element_rect(fill = "white", colour = text_colour, size = 0.5, linetype = 1), 
+              text = element_text(debug = FALSE, margin = margin(), family = "", face = "plain", colour = text_colour, 
+                                  size = text_size, hjust = 0.5, vjust = 0.5, angle = 0, lineheight = 0.9), 
+              axis.text = element_text(debug = FALSE, margin = margin(), size = rel(0.8), colour = text_colour), 
+              strip.text = element_text(debug = FALSE, margin = margin(), size = rel(0.8)), axis.line = element_line(colour = line_colour), 
+              axis.line.x = element_line(colour = line_colour), axis.line.y = element_line(colour = line_colour), 
+              axis.text.x = element_text(debug = FALSE, margin = margin(0.1 * spacing, 0.1 * spacing, 0.1 * spacing, 0.1 * spacing, unit = "cm"), 
+                                         vjust = 1, colour = text_colour, face = "bold"), 
+              axis.text.y = element_text(debug = FALSE, margin = margin(0.1 * spacing, 0.1 * spacing, 0.1 * spacing, 0.1 * spacing, unit = "cm"), 
+                                         hjust = 1, colour = text_colour, face = "bold"), 
+              axis.ticks = element_line(colour = line_colour), axis.title = element_text(face = "bold", colour = text_colour), 
+              axis.title.x = element_text(debug = FALSE, margin = margin(), vjust = x_title_spacing(spacing)), 
+              axis.title.y = element_text(debug = FALSE, margin = margin(), angle = 90, vjust = y_title_spacing(spacing)),
+              axis.ticks.length = grid::unit(0.15, "cm"), 
+              axis.ticks.length.x.bottom = grid::unit(0.15, "cm"), 
+              axis.ticks.length.x.top = grid::unit(0.15, "cm"),
+              axis.ticks.length.y.left = grid::unit(0.15, "cm"), 
+              axis.ticks.length.y.right = grid::unit(0.15, "cm"),
+              legend.background = element_rect(colour = ifelse(inner, "white", palette$background), fill = ifelse(inner, "white", palette$background)),
+              legend.margin = grid::unit(0.2 * spacing, "cm"), 
+              legend.key = element_rect(colour = ifelse(inner, "white", palette$background), fill = palette$background), 
+              legend.key.size = grid::unit(1.2, "lines"), 
+              legend.key.height = NULL, 
+              legend.key.width = NULL, 
+              legend.text = element_text(debug = FALSE, margin = margin(), size = rel(0.8)),
+              legend.position = "right", 
+              legend.direction = NULL,
+              legend.justification = "center", 
+              legend.box = NULL, 
+              panel.background = element_rect(fill = palette$background, colour = NA),
+              panel.border = element_blank(), 
+              panel.grid.major = element_line(linetype = "dashed", colour = palette$gridline), 
+              panel.grid.minor = element_blank(), 
+              panel.margin = grid::unit(0.5 * spacing, "cm"), 
+              panel.margin.x = NULL, 
+              panel.margin.y = NULL,
+              panel.ontop = FALSE,
+              strip.background = element_rect(fill = ifelse(inner, "white", palette$background), colour = NA),
+              strip.text.x = element_text(debug = FALSE, margin = margin(), size = rel(1.1), face = "bold"), 
+              strip.text.y = element_text(debug = FALSE, margin = margin(), angle = -90, face = "bold", size = rel(1.1)),
+              strip.switch.pad.grid = grid::unit(0, "cm"), 
+              strip.switch.pad.wrap = grid::unit(0, "cm"), 
+              plot.background = element_rect(colour = ifelse(inner, "white", palette$background), fill = ifelse(inner, "white", palette$background)),
+              plot.title = element_text(debug = FALSE, margin = margin(0, 0, 6.6, 0), size = rel(1.2), vjust = spacing, face = "bold"), 
+              plot.margin = grid::unit(c(0.625, 0.625, 0.625, 0.625) * spacing, "cm"), complete = TRUE)
       g0 <- g0 + 
         scale_fill_manual("legend", values = vl) +
         theme(plot.background = element_rect(colour = input$background, fill = input$background),
@@ -306,26 +314,60 @@ server <- function(input, output, session) {
   })
   
   output$result <- renderImage({
-    if (!is.null(brchr$pth)) {
-      pth <- brchr$pth
+    # if (!is.null(brchr$pth)) {
+    #   pth <- brchr$pth
+    # } else {
+    #   pth <- "data/sampleData/prim.gif"
+    # }
+    # if (input$`initial_data-imageInput` == "sampleData") {
+    #   img(src = ls[[plot_lego$dtin()$src]])
+    if (input$`initial_data-tableInput` == "sampleData" & input$generate == 0) {
+      ls <- list("data/sampleData/emisiones_c02_en.csv" = "data/sampleData/em_en.gif",
+                 "data/sampleData/emisiones_c02_es.csv" = "data/sampleData/em_es.gif",
+                 "data/sampleData/emisiones_c02_pt.csv" = "data/sampleData/em_pt.gif",
+                 "data/sampleData/tennis_grand_slams_en.csv" = "data/sampleData/tn_en.gif",
+                 "data/sampleData/tennis_grand_slams_es.csv" = "data/sampleData/tn_es.gif",
+                 "data/sampleData/tennis_grand_slams_pt.csv" = "data/sampleData/tn_pt.gif")
+      pth <- ls[[input$`initial_data-inputDataSample`]]
     } else {
-      pth <- "data/sampleData/prim.gif"
+      pth <- brchr$pth
     }
     list(src = pth, contentType = "image/gif")
   }, deleteFile = FALSE)
   
   observeEvent(list(parmesan_input(), inputData()), {
     session$sendCustomMessage("setButtonState", c("none", "generate_bt"))
+    session$sendCustomMessage("setButtonState", c("none", "downloadGif"))
+  })
+  
+  output$modal <- renderUI({
+    dw <- i_("download", lang())
+    loadingGif <- "data:image/gif;base64,R0lGODlhEAALAPQAAP///wAAANra2tDQ0Orq6gYGBgAAAC4uLoKCgmBgYLq6uiIiIkpKSoqKimRkZL6+viYmJgQEBE5OTubm5tjY2PT09Dg4ONzc3PLy8ra2tqCgoMrKyu7u7gAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCwAAACwAAAAAEAALAAAFLSAgjmRpnqSgCuLKAq5AEIM4zDVw03ve27ifDgfkEYe04kDIDC5zrtYKRa2WQgAh+QQJCwAAACwAAAAAEAALAAAFJGBhGAVgnqhpHIeRvsDawqns0qeN5+y967tYLyicBYE7EYkYAgAh+QQJCwAAACwAAAAAEAALAAAFNiAgjothLOOIJAkiGgxjpGKiKMkbz7SN6zIawJcDwIK9W/HISxGBzdHTuBNOmcJVCyoUlk7CEAAh+QQJCwAAACwAAAAAEAALAAAFNSAgjqQIRRFUAo3jNGIkSdHqPI8Tz3V55zuaDacDyIQ+YrBH+hWPzJFzOQQaeavWi7oqnVIhACH5BAkLAAAALAAAAAAQAAsAAAUyICCOZGme1rJY5kRRk7hI0mJSVUXJtF3iOl7tltsBZsNfUegjAY3I5sgFY55KqdX1GgIAIfkECQsAAAAsAAAAABAACwAABTcgII5kaZ4kcV2EqLJipmnZhWGXaOOitm2aXQ4g7P2Ct2ER4AMul00kj5g0Al8tADY2y6C+4FIIACH5BAkLAAAALAAAAAAQAAsAAAUvICCOZGme5ERRk6iy7qpyHCVStA3gNa/7txxwlwv2isSacYUc+l4tADQGQ1mvpBAAIfkECQsAAAAsAAAAABAACwAABS8gII5kaZ7kRFGTqLLuqnIcJVK0DeA1r/u3HHCXC/aKxJpxhRz6Xi0ANAZDWa+kEAA7AAAAAAAAAAAA"
+    div(style = "text-align: center;",
+        downloadButton("downloadGif", paste0(dw, " GIF"), style = "width: 200px; display: inline-block;"),
+        span(class = "btn-loading-container",
+             img(src = loadingGif, class = "btn-loading-indicator", style = "display: none"),
+             shiny::HTML("<i class = 'btn-done-indicator fa fa-check' style='display: none'> </i>")))
   })
   
   output$downloadGif <- downloadHandler(filename = function() { 
     session$sendCustomMessage("setButtonState", c("loading", "downloadGif"))
     paste0("bar_chart_race", "-", gsub(" ", "_", substr(as.POSIXct(Sys.time()), 1, 19)), ".gif")
-    },
-    content = function(file) {
+  },
+  content = function(file) {
+    if (input$`initial_data-tableInput` == "sampleData" & input$generate == 0) {
+      ls <- list("data/sampleData/emisiones_c02_en.csv" = "data/sampleData/em_en.gif",
+                 "data/sampleData/emisiones_c02_es.csv" = "data/sampleData/em_es.gif",
+                 "data/sampleData/emisiones_c02_pt.csv" = "data/sampleData/em_pt.gif",
+                 "data/sampleData/tennis_grand_slams_en.csv" = "data/sampleData/tn_en.gif",
+                 "data/sampleData/tennis_grand_slams_es.csv" = "data/sampleData/tn_es.gif",
+                 "data/sampleData/tennis_grand_slams_pt.csv" = "data/sampleData/tn_pt.gif")
+      image_write(image_read(ls[[input$`initial_data-inputDataSample`]]), file)
+    } else {
       anim_save(file, brchr$an)
-      session$sendCustomMessage("setButtonState", c("done", "downloadGif"))
-    })
+    }
+    session$sendCustomMessage("setButtonState", c("done", "downloadGif"))
+  })
   
 }
 

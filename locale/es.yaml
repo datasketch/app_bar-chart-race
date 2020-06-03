@@ -4,14 +4,18 @@ options: Opciones
 viz: Vizualización
 sample: Datos de muestra
 sample_lb: Selecciona datos de muestra
+sample_ch_0: "data/sampleData/emisiones_c02_es.csv"
+sample_ch_1: "data/sampleData/tennis_grand_slams_es.csv"
+sample_ch_nm_0: Emisiones de CO2 per capita
+sample_ch_nm_1: 'Grand slams de tenis'
 paste: Copiar & pegar
 paste_pl: Copia y pega aquí
-upload: Subir CSX/XLS
-upload_lb: Escoje archivo CSV/XLS
+upload: Subir CSV/XLS
+upload_lb: Escoge archivo CSV/XLS
 upload_bt_lb: Examinar...
 upload_pl: Ningún archivo seleccionado
 google: Google sheets
-google_sh_lb: Datos desde Google Sheet
+google_sh_lb: Datos desde Google sheet
 google_sh_pl: https://docs.google.com/spreadsheets/...
 google_sh_pg_lb: Hoja
 variables: Variables
@@ -54,6 +58,7 @@ info_et: 'Texto antecediendo las etapas es marcha de la carrera'
 info_nf: "Número de cuadros en la carrera"
 info_fs: "Número de cuadros por segundo"
 info_dr: "Duración de la carrera en segundos"
+info_tl: "Título de la gráfica. Para saltos de línea usar \\n"
 white: Blanco
 red: Rojo
 blue: Azul

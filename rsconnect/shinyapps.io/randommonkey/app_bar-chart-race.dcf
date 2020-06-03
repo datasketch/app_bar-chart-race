@@ -5,8 +5,8 @@ account: randommonkey
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2206110
-bundleId: 3188623
+bundleId: 3189079
 url: https://randommonkey.shinyapps.io/app_bar-chart-race/
-when: 1590438094.95754
+when: 1590449261.24408
 asMultiple: FALSE
 asStatic: FALSE

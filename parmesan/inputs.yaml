@@ -102,6 +102,9 @@ title:
   input_params:
     label: title
     value: ''
+  input_info:
+    icon: info-circle
+    text: info_tl
 states_text:
   show: true
   input_type: textInput
@@ -141,27 +144,21 @@ marks:
   input_params:
     label: marks
     choices:
-      '12,345.00':
-      - ",&."
-      12.345.00:
-      - ".&,"
-      '12345.00':
-      - "&."
-      '12345,00':
-      - "&,"
-      12 345.00:
-      - " &."
-      12 345,00:
-      - " &,"
-    selected: ",&."
+      - "12,345.00"
+      - "12.345,00"
+      - "12345.00"
+      - "12345,00"
+      - "12 345.00"
+      - "12 345,00"
+    selected: "12,345.00"
 n_digits:
   show: true
   input_type: numericInput
   input_params:
     label: n_digits
     value: 4
-    min: 1
-    max: 8
+    min: 0
+    max: 4
 suffix:
   show: true
   input_type: textInput
