@@ -10,6 +10,7 @@ library(homodatum)
 library(gganimate)
 library(gifski)
 library(magick)
+library(makeup)
 
 
 
@@ -49,7 +50,7 @@ ui <- panelsPage(includeScript(paste0(system.file("aux/", package = "dsmodules")
 server <- function(input, output, session) {
   
   i18n <- list(defaultLang = "en", availableLangs = c("es", "en", "pt_BR"))
-  lang <- callModule(langSelector, "lang", i18n = i18n, showSelector = TRUE)
+  lang <- callModule(langSelector, "lang", i18n = i18n, showSelector = FALSE)
   observeEvent(lang(), {uiLangUpdate(input$shi18ny_ui_classes, lang())})  
   
   output$table_input <- renderUI({
@@ -127,9 +128,7 @@ server <- function(input, output, session) {
     req(input$hotr_input)
     hotr_table(input$hotr_input)
   })
-  # observe({
-  #   assign("a0", hotr_fringe(input$hotr_input, envir = globalenv())
-  # })
+  
   # poner sólo categóricas
   ids <- reactive({
     dt0 <- hotr_fringe(input$hotr_input)$dic
@@ -370,7 +369,7 @@ server <- function(input, output, session) {
   })
   
 }
-
+  
 
 
 shinyApp(ui, server)
