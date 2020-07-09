@@ -1,6 +1,6 @@
 library(shinypanels)
 library(parmesan)
-# library(shinyinvoer)
+library(shinyinvoer)
 library(shi18ny)
 library(V8)
 library(dsmodules)
@@ -11,10 +11,11 @@ library(gganimate)
 library(gifski)
 library(magick)
 library(makeup)
+library(shinycustomloader)
 
 
 
-ui <- panelsPage(includeScript(paste0(system.file("aux/", package = "dsmodules"), "downloadGen.js")),
+ui <- panelsPage(includeScript(paste0(system.file("js/", package = "dsmodules"), "downloadGen.js")),
                  useShi18ny(),
                  panel(title = ui_("upload_data"),
                        width = 200,
@@ -28,7 +29,6 @@ ui <- panelsPage(includeScript(paste0(system.file("aux/", package = "dsmodules")
                        body = uiOutput("controls"),
                        footer =  div(style = "text-align: center; display: flex; align-items: baseline;",
                                      `data-for-btn` = "generate",
-                                     # uiOutput("generate_bt"),
                                      uiOutput("generate_bt"),
                                      span(class = "btn-loading-container",
                                           img(style = "display: none; margin-left: 18px;",
@@ -39,11 +39,9 @@ ui <- panelsPage(includeScript(paste0(system.file("aux/", package = "dsmodules")
                        color = "chardonnay",
                        can_collapse = FALSE,
                        body = div(langSelectorInput("lang", position = "fixed"),
-                                  imageOutput("result"),
-                                  shinypanels::modal(id = "download",
-                                                     title = ui_("download_plot"),
-                                                     uiOutput("modal"))),
-                       footer = shinypanels::modalButton(label = "Download plot", modal_id = "download")))
+                                  uiOutput("download"),
+                                  br(),
+                                  withLoader(imageOutput("result", height = "80vh"), type = "image", loader = "loading_gris.gif"))))
 
 
 
@@ -89,21 +87,14 @@ server <- function(input, output, session) {
     )
   })
   
-  observeEvent(lang(), {
-    ch <- as.character(parmesan$styles$inputs[[3]]$input_params$choices)
-    names(ch) <- i_(ch, lang())
-    updateSelectInput(session, "background", choices = ch, selected = input$background)
-  })
-  
   inputData <- eventReactive(labels(), {
     do.call(callModule, c(tableInput, "initial_data", labels()))
   })
   
   output$data_preview <- renderUI({
     req(inputData())
-    suppressWarnings(hotr("hotr_input", data = inputData(), order = NULL, options = list(height = 470), enableCTypes = FALSE))
-    # suppressWarnings(hotr_fringe("hotr_input", data = inputData(), order = NULL, options = list(height = 470), enableCTypes = FALSE))
-  })
+    suppressWarnings(hotr("hotr_input", data = inputData(), order = NULL, options = list(height = "80vh"), enableCTypes = FALSE))
+    })
   
   brchr <- reactiveValues(pth = NULL,
                           an = NULL)
@@ -312,6 +303,12 @@ server <- function(input, output, session) {
     brchr$pth <- gif_path
   })
   
+  output$download <- renderUI({
+    lb <- i_("download_plot", lang())
+    dw <- i_("download", lang())
+    downloadTableUI("download_data_button", label = lb, text = dw, formats = "gif", display = "dropdown", dropdownWidth = 164)
+  })
+  
   output$result <- renderImage({
     # if (!is.null(brchr$pth)) {
     #   pth <- brchr$pth
@@ -331,7 +328,7 @@ server <- function(input, output, session) {
     } else {
       pth <- brchr$pth
     }
-    list(src = pth, contentType = "image/gif")
+    list(src = pth, contentType = "image/gif", style = "height: 60vh !important; margin: 3% 0 0 17%; width: 60%;")
   }, deleteFile = FALSE)
   
   observeEvent(list(parmesan_input(), inputData()), {
@@ -339,17 +336,18 @@ server <- function(input, output, session) {
     session$sendCustomMessage("setButtonState", c("none", "downloadGif"))
   })
   
-  output$modal <- renderUI({
-    dw <- i_("download", lang())
-    loadingGif <- "data:image/gif;base64,R0lGODlhEAALAPQAAP///wAAANra2tDQ0Orq6gYGBgAAAC4uLoKCgmBgYLq6uiIiIkpKSoqKimRkZL6+viYmJgQEBE5OTubm5tjY2PT09Dg4ONzc3PLy8ra2tqCgoMrKyu7u7gAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCwAAACwAAAAAEAALAAAFLSAgjmRpnqSgCuLKAq5AEIM4zDVw03ve27ifDgfkEYe04kDIDC5zrtYKRa2WQgAh+QQJCwAAACwAAAAAEAALAAAFJGBhGAVgnqhpHIeRvsDawqns0qeN5+y967tYLyicBYE7EYkYAgAh+QQJCwAAACwAAAAAEAALAAAFNiAgjothLOOIJAkiGgxjpGKiKMkbz7SN6zIawJcDwIK9W/HISxGBzdHTuBNOmcJVCyoUlk7CEAAh+QQJCwAAACwAAAAAEAALAAAFNSAgjqQIRRFUAo3jNGIkSdHqPI8Tz3V55zuaDacDyIQ+YrBH+hWPzJFzOQQaeavWi7oqnVIhACH5BAkLAAAALAAAAAAQAAsAAAUyICCOZGme1rJY5kRRk7hI0mJSVUXJtF3iOl7tltsBZsNfUegjAY3I5sgFY55KqdX1GgIAIfkECQsAAAAsAAAAABAACwAABTcgII5kaZ4kcV2EqLJipmnZhWGXaOOitm2aXQ4g7P2Ct2ER4AMul00kj5g0Al8tADY2y6C+4FIIACH5BAkLAAAALAAAAAAQAAsAAAUvICCOZGme5ERRk6iy7qpyHCVStA3gNa/7txxwlwv2isSacYUc+l4tADQGQ1mvpBAAIfkECQsAAAAsAAAAABAACwAABS8gII5kaZ7kRFGTqLLuqnIcJVK0DeA1r/u3HHCXC/aKxJpxhRz6Xi0ANAZDWa+kEAA7AAAAAAAAAAAA"
-    div(style = "text-align: center;",
-        downloadButton("downloadGif", paste0(dw, " GIF"), style = "width: 200px; display: inline-block;"),
-        span(class = "btn-loading-container",
-             img(src = loadingGif, class = "btn-loading-indicator", style = "display: none"),
-             shiny::HTML("<i class = 'btn-done-indicator fa fa-check' style='display: none'> </i>")))
-  })
+  # output$modal <- renderUI({
+  #   dw <- i_("download", lang())
+  #   loadingGif <- "data:image/gif;base64,R0lGODlhEAALAPQAAP///wAAANra2tDQ0Orq6gYGBgAAAC4uLoKCgmBgYLq6uiIiIkpKSoqKimRkZL6+viYmJgQEBE5OTubm5tjY2PT09Dg4ONzc3PLy8ra2tqCgoMrKyu7u7gAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCwAAACwAAAAAEAALAAAFLSAgjmRpnqSgCuLKAq5AEIM4zDVw03ve27ifDgfkEYe04kDIDC5zrtYKRa2WQgAh+QQJCwAAACwAAAAAEAALAAAFJGBhGAVgnqhpHIeRvsDawqns0qeN5+y967tYLyicBYE7EYkYAgAh+QQJCwAAACwAAAAAEAALAAAFNiAgjothLOOIJAkiGgxjpGKiKMkbz7SN6zIawJcDwIK9W/HISxGBzdHTuBNOmcJVCyoUlk7CEAAh+QQJCwAAACwAAAAAEAALAAAFNSAgjqQIRRFUAo3jNGIkSdHqPI8Tz3V55zuaDacDyIQ+YrBH+hWPzJFzOQQaeavWi7oqnVIhACH5BAkLAAAALAAAAAAQAAsAAAUyICCOZGme1rJY5kRRk7hI0mJSVUXJtF3iOl7tltsBZsNfUegjAY3I5sgFY55KqdX1GgIAIfkECQsAAAAsAAAAABAACwAABTcgII5kaZ4kcV2EqLJipmnZhWGXaOOitm2aXQ4g7P2Ct2ER4AMul00kj5g0Al8tADY2y6C+4FIIACH5BAkLAAAALAAAAAAQAAsAAAUvICCOZGme5ERRk6iy7qpyHCVStA3gNa/7txxwlwv2isSacYUc+l4tADQGQ1mvpBAAIfkECQsAAAAsAAAAABAACwAABS8gII5kaZ7kRFGTqLLuqnIcJVK0DeA1r/u3HHCXC/aKxJpxhRz6Xi0ANAZDWa+kEAA7AAAAAAAAAAAA"
+  #   div(style = "text-align: center;",
+  #       downloadButton("downloadGif", paste0(dw, " GIF"), style = "width: 200px; display: inline-block;"),
+  #       span(class = "btn-loading-container",
+  #            img(src = loadingGif, class = "btn-loading-indicator", style = "display: none"),
+  #            shiny::HTML("<i class = 'btn-done-indicator fa fa-check' style='display: none'> </i>")))
+  # })
   
-  output$downloadGif <- downloadHandler(filename = function() { 
+  # output$downloadGif <- downloadHandler(filename = function() { 
+  output$`download_data_button-DownloadTblgif` <- downloadHandler(filename = function() { 
     session$sendCustomMessage("setButtonState", c("loading", "downloadGif"))
     paste0("bar_chart_race", "-", gsub(" ", "_", substr(as.POSIXct(Sys.time()), 1, 19)), ".gif")
   },

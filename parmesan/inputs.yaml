@@ -210,19 +210,12 @@ orientation:
     selected: hor
 background:
   show: true
-  input_type: selectizeInput
+  input_type: colorPaletteInput
   input_params:
     label: background
-    choices: 
-      White:
-      - white 
-      Red:
-      - red 
-      Blue:
-      - blue
-      Gray:
-      - gray 
-    selected: white
+    colors:
+      - "#ffffff" 
+    max_colors: 1
 text_show:
   show: true
   input_type: checkboxInput

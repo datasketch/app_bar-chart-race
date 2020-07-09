@@ -1,7 +1,7 @@
 upload_data: Upload data
 dataset: Dataset
 options: Options
-viz: Viz
+viz: Visualization
 sample: Sample data
 sample_lb: Select a sample data
 sample_ch_0: "data/sampleData/emisiones_c02_en.csv"
@@ -46,17 +46,18 @@ suffix: Suffix
 legend_show: Show legend
 orientation: Orientation
 background: Background
-text_show: Show datalabels
+text_show: Show data labels
 y_labels_show: Show y axis values
 theme: Theme
 generate: Generate
 download_plot: Download plot
+download: Download
 info_id: 'Column with the names of the "participants" of the race'
 info_st: "Column with the stages of the race"
 info_vl: 'Column with the results of the "participants" in each stage of the race'
 info_et: "Text preceding the running stages of the race"
 info_nf: "Number of frames in the race" 
-info_fs: "Number of Frames per second"
+info_fs: "Number of frames per second"
 info_dr: "Length of the race in seconds" 
 info_tl: "Visualization's title. For line brake use \\n"
 white: White

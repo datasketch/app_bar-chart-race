@@ -51,6 +51,7 @@ y_labels_show: Mostrar valores eixo y
 theme: Tópico
 generate: Gerar
 download_plot: Baixar grafico
+download: Baixar
 info_id: 'Coluna com os nomes dos "participantes" da corrida'
 info_st: "Coluna com os estágios da corrida"
 info_vl: 'Coluna com os resultados dos "participantes" em cada estágios da corrida'
