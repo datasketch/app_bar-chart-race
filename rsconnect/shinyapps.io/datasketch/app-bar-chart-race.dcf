@@ -1,0 +1,12 @@
+name: app-bar-chart-race
+title: app-bar-chart-race
+username:
+account: datasketch
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2555015
+bundleId: 3374311
+url: https://datasketch.shinyapps.io/app-bar-chart-race/
+when: 1594344038.35995
+asMultiple: FALSE
+asStatic: FALSE

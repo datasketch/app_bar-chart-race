@@ -36,11 +36,10 @@ ui <- panelsPage(includeScript(paste0(system.file("js/", package = "dsmodules"),
                                               src = "data:image/gif;base64,R0lGODlhEAALAPQAAP///wAAANra2tDQ0Orq6gYGBgAAAC4uLoKCgmBgYLq6uiIiIkpKSoqKimRkZL6+viYmJgQEBE5OTubm5tjY2PT09Dg4ONzc3PLy8ra2tqCgoMrKyu7u7gAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCwAAACwAAAAAEAALAAAFLSAgjmRpnqSgCuLKAq5AEIM4zDVw03ve27ifDgfkEYe04kDIDC5zrtYKRa2WQgAh+QQJCwAAACwAAAAAEAALAAAFJGBhGAVgnqhpHIeRvsDawqns0qeN5+y967tYLyicBYE7EYkYAgAh+QQJCwAAACwAAAAAEAALAAAFNiAgjothLOOIJAkiGgxjpGKiKMkbz7SN6zIawJcDwIK9W/HISxGBzdHTuBNOmcJVCyoUlk7CEAAh+QQJCwAAACwAAAAAEAALAAAFNSAgjqQIRRFUAo3jNGIkSdHqPI8Tz3V55zuaDacDyIQ+YrBH+hWPzJFzOQQaeavWi7oqnVIhACH5BAkLAAAALAAAAAAQAAsAAAUyICCOZGme1rJY5kRRk7hI0mJSVUXJtF3iOl7tltsBZsNfUegjAY3I5sgFY55KqdX1GgIAIfkECQsAAAAsAAAAABAACwAABTcgII5kaZ4kcV2EqLJipmnZhWGXaOOitm2aXQ4g7P2Ct2ER4AMul00kj5g0Al8tADY2y6C+4FIIACH5BAkLAAAALAAAAAAQAAsAAAUvICCOZGme5ERRk6iy7qpyHCVStA3gNa/7txxwlwv2isSacYUc+l4tADQGQ1mvpBAAIfkECQsAAAAsAAAAABAACwAABS8gII5kaZ7kRFGTqLLuqnIcJVK0DeA1r/u3HHCXC/aKxJpxhRz6Xi0ANAZDWa+kEAA7AAAAAAAAAAAA"),
                                           HTML("<i class = 'btn-done-indicator fa fa-check' style = 'display: none; margin-left: 18px;'> </i>")))),
                  panel(title = ui_("viz"),
+                       title_plugin = uiOutput("download"),
                        color = "chardonnay",
                        can_collapse = FALSE,
                        body = div(langSelectorInput("lang", position = "fixed"),
-                                  uiOutput("download"),
-                                  br(),
                                   withLoader(imageOutput("result", height = "80vh"), type = "image", loader = "loading_gris.gif"))))
 
 
@@ -261,9 +260,7 @@ server <- function(input, output, session) {
               plot.title = element_text(debug = FALSE, margin = margin(0, 0, 6.6, 0), size = rel(1.2), vjust = spacing, face = "bold"), 
               plot.margin = grid::unit(c(0.625, 0.625, 0.625, 0.625) * spacing, "cm"), complete = TRUE)
       g0 <- g0 + 
-        scale_fill_manual("legend", values = vl) +
-        theme(plot.background = element_rect(colour = input$background, fill = input$background),
-              panel.background = element_rect(fill = input$background))
+        scale_fill_manual("legend", values = vl)
     } else {
       g0 <- g0 +
         do.call(paste0("theme_", input$theme), list()) 
@@ -275,6 +272,9 @@ server <- function(input, output, session) {
         axis.title.x = element_blank(),
         axis.title.y = element_blank(),
         # legend.position = "none",
+        plot.background = element_rect(colour = input$background, fill = input$background),
+        panel.background = element_rect(fill = input$background),
+        
         plot.title = element_text(size = 16, hjust = 1, vjust = 6),
         plot.subtitle = element_text(size = 16, hjust = 1, vjust = 5, color = "grey"),
         plot.caption = element_text(size = 13, hjust = 1, color = "gray"),
