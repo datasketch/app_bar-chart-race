@@ -15,8 +15,8 @@ library(shinycustomloader)
 
 
 
-ui <- panelsPage(includeScript(paste0(system.file("js/", package = "dsmodules"), "downloadGen.js")),
-                 useShi18ny(),
+ui <- panelsPage(useShi18ny(),
+                 showDebug(), 
                  panel(title = ui_("upload_data"),
                        width = 200,
                        body = uiOutput("table_input")),
@@ -93,7 +93,7 @@ server <- function(input, output, session) {
   output$data_preview <- renderUI({
     req(inputData())
     suppressWarnings(hotr("hotr_input", data = inputData(), order = NULL, options = list(height = "80vh"), enableCTypes = FALSE))
-    })
+  })
   
   brchr <- reactiveValues(pth = NULL,
                           an = NULL)
@@ -367,7 +367,7 @@ server <- function(input, output, session) {
   })
   
 }
-  
+
 
 
 shinyApp(ui, server)
