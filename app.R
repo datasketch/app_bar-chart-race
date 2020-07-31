@@ -40,7 +40,7 @@ ui <- panelsPage(useShi18ny(),
                        color = "chardonnay",
                        can_collapse = FALSE,
                        body = div(langSelectorInput("lang", position = "fixed"),
-                                  withLoader(imageOutput("result", height = "80vh"), type = "image", loader = "loading_gris.gif"))))
+                                  withLoader(imageOutput("result", height = "86vh"), type = "image", loader = "loading_gris.gif"))))
 
 
 
@@ -92,7 +92,7 @@ server <- function(input, output, session) {
   
   output$data_preview <- renderUI({
     req(inputData())
-    suppressWarnings(hotr("hotr_input", data = inputData(), order = NULL, options = list(height = "80vh"), enableCTypes = FALSE))
+    suppressWarnings(hotr("hotr_input", data = inputData(), order = NULL, options = list(height = "86vh"), enableCTypes = FALSE))
   })
   
   brchr <- reactiveValues(pth = NULL,
@@ -130,7 +130,6 @@ server <- function(input, output, session) {
     # setdiff(names(dt()), c(input$ids, input$values))
     dt0 <- hotr_fringe(input$hotr_input)$dic
     dt0$label[dt0$hdType %in% "Yea"]
-    # que uno pueda ponde input__ids para selected y no lo tenga que poner en un reactivo independiente
     # setdiff(names(dt()), input$ids)
   })
   
@@ -306,7 +305,9 @@ server <- function(input, output, session) {
   output$download <- renderUI({
     lb <- i_("download_plot", lang())
     dw <- i_("download", lang())
-    downloadTableUI("download_data_button", label = lb, text = dw, formats = "gif", display = "dropdown", dropdownWidth = 164)
+    gl <- i_("get_link", lang())
+    downloadTableUI("download_data_button", dropdownLabel = lb, text = dw, formats = c("link", "gif"),
+                    display = "dropdown", dropdownWidth = 164, getLinkLabel = gl, modalTitle = gl)
   })
   
   output$result <- renderImage({
@@ -333,22 +334,11 @@ server <- function(input, output, session) {
   
   observeEvent(list(parmesan_input(), inputData()), {
     session$sendCustomMessage("setButtonState", c("none", "generate_bt"))
-    session$sendCustomMessage("setButtonState", c("none", "downloadGif"))
   })
   
-  # output$modal <- renderUI({
-  #   dw <- i_("download", lang())
-  #   loadingGif <- "data:image/gif;base64,R0lGODlhEAALAPQAAP///wAAANra2tDQ0Orq6gYGBgAAAC4uLoKCgmBgYLq6uiIiIkpKSoqKimRkZL6+viYmJgQEBE5OTubm5tjY2PT09Dg4ONzc3PLy8ra2tqCgoMrKyu7u7gAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCwAAACwAAAAAEAALAAAFLSAgjmRpnqSgCuLKAq5AEIM4zDVw03ve27ifDgfkEYe04kDIDC5zrtYKRa2WQgAh+QQJCwAAACwAAAAAEAALAAAFJGBhGAVgnqhpHIeRvsDawqns0qeN5+y967tYLyicBYE7EYkYAgAh+QQJCwAAACwAAAAAEAALAAAFNiAgjothLOOIJAkiGgxjpGKiKMkbz7SN6zIawJcDwIK9W/HISxGBzdHTuBNOmcJVCyoUlk7CEAAh+QQJCwAAACwAAAAAEAALAAAFNSAgjqQIRRFUAo3jNGIkSdHqPI8Tz3V55zuaDacDyIQ+YrBH+hWPzJFzOQQaeavWi7oqnVIhACH5BAkLAAAALAAAAAAQAAsAAAUyICCOZGme1rJY5kRRk7hI0mJSVUXJtF3iOl7tltsBZsNfUegjAY3I5sgFY55KqdX1GgIAIfkECQsAAAAsAAAAABAACwAABTcgII5kaZ4kcV2EqLJipmnZhWGXaOOitm2aXQ4g7P2Ct2ER4AMul00kj5g0Al8tADY2y6C+4FIIACH5BAkLAAAALAAAAAAQAAsAAAUvICCOZGme5ERRk6iy7qpyHCVStA3gNa/7txxwlwv2isSacYUc+l4tADQGQ1mvpBAAIfkECQsAAAAsAAAAABAACwAABS8gII5kaZ7kRFGTqLLuqnIcJVK0DeA1r/u3HHCXC/aKxJpxhRz6Xi0ANAZDWa+kEAA7AAAAAAAAAAAA"
-  #   div(style = "text-align: center;",
-  #       downloadButton("downloadGif", paste0(dw, " GIF"), style = "width: 200px; display: inline-block;"),
-  #       span(class = "btn-loading-container",
-  #            img(src = loadingGif, class = "btn-loading-indicator", style = "display: none"),
-  #            shiny::HTML("<i class = 'btn-done-indicator fa fa-check' style='display: none'> </i>")))
-  # })
   
   # output$downloadGif <- downloadHandler(filename = function() { 
   output$`download_data_button-DownloadTblgif` <- downloadHandler(filename = function() { 
-    session$sendCustomMessage("setButtonState", c("loading", "downloadGif"))
     paste0("bar_chart_race", "-", gsub(" ", "_", substr(as.POSIXct(Sys.time()), 1, 19)), ".gif")
   },
   content = function(file) {
@@ -363,7 +353,6 @@ server <- function(input, output, session) {
     } else {
       anim_save(file, brchr$an)
     }
-    session$sendCustomMessage("setButtonState", c("done", "downloadGif"))
   })
   
 }

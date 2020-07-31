@@ -52,6 +52,7 @@ theme: Theme
 generate: Generate
 download_plot: Download plot
 download: Download
+get_link: Get link
 info_id: 'Column with the names of the "participants" of the race'
 info_st: "Column with the stages of the race"
 info_vl: 'Column with the results of the "participants" in each stage of the race'

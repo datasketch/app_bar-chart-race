@@ -52,10 +52,11 @@ theme: Tema
 generate: Generar
 download_plot: Descargar gráfica
 download: Descargar
+get_link: Obtener enlace
 info_id: 'Columna con los nombres de los "participantes" de la carrera'
 info_st: "Columna con las etapas de la carrera"
-info_vl: 'Column con los resultados de los "participantes" en cada etapa de la carrera'
-info_et: 'Texto antecediendo las etapas es marcha de la carrera'
+info_vl: 'Columna con los resultados de los "participantes" en cada etapa de la carrera'
+info_et: 'Texto antecediendo las etapas en marcha de la carrera'
 info_nf: "Número de cuadros en la carrera"
 info_fs: "Número de cuadros por segundo"
 info_dr: "Duración de la carrera en segundos"
