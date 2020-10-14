@@ -2,8 +2,8 @@ variables:
   label: variables
   inputs:
     - ids
-    - values
     - states
+    - values
 styles:
   label: styles
   inputs:

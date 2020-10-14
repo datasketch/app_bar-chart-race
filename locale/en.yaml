@@ -53,6 +53,16 @@ generate: Generate
 download_plot: Download plot
 download: Download
 get_link: Get link
+gl_name: Name
+gl_slug: Slug
+gl_description: Description
+gl_license: License
+gl_tags: Tags
+gl_category: Category
+gl_save: Save in dslibrary
+gl_url: URL
+gl_iframe: Copy to embed
+gl_error: There has been a problem; try again later.
 info_id: 'Column with the names of the "participants" of the race'
 info_st: "Column with the stages of the race"
 info_vl: 'Column with the results of the "participants" in each stage of the race'

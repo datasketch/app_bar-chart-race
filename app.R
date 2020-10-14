@@ -4,6 +4,7 @@ library(shinyinvoer)
 library(shi18ny)
 library(V8)
 library(dsmodules)
+library(dspins)
 library(hotr)
 library(tidyverse)
 library(homodatum)
@@ -33,7 +34,7 @@ ui <- panelsPage(useShi18ny(),
                                      span(class = "btn-loading-container",
                                           img(style = "display: none; margin-left: 18px;",
                                               class = "btn-loading-indicator",
-                                              src = "data:image/gif;base64,R0lGODlhEAALAPQAAP///wAAANra2tDQ0Orq6gYGBgAAAC4uLoKCgmBgYLq6uiIiIkpKSoqKimRkZL6+viYmJgQEBE5OTubm5tjY2PT09Dg4ONzc3PLy8ra2tqCgoMrKyu7u7gAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCwAAACwAAAAAEAALAAAFLSAgjmRpnqSgCuLKAq5AEIM4zDVw03ve27ifDgfkEYe04kDIDC5zrtYKRa2WQgAh+QQJCwAAACwAAAAAEAALAAAFJGBhGAVgnqhpHIeRvsDawqns0qeN5+y967tYLyicBYE7EYkYAgAh+QQJCwAAACwAAAAAEAALAAAFNiAgjothLOOIJAkiGgxjpGKiKMkbz7SN6zIawJcDwIK9W/HISxGBzdHTuBNOmcJVCyoUlk7CEAAh+QQJCwAAACwAAAAAEAALAAAFNSAgjqQIRRFUAo3jNGIkSdHqPI8Tz3V55zuaDacDyIQ+YrBH+hWPzJFzOQQaeavWi7oqnVIhACH5BAkLAAAALAAAAAAQAAsAAAUyICCOZGme1rJY5kRRk7hI0mJSVUXJtF3iOl7tltsBZsNfUegjAY3I5sgFY55KqdX1GgIAIfkECQsAAAAsAAAAABAACwAABTcgII5kaZ4kcV2EqLJipmnZhWGXaOOitm2aXQ4g7P2Ct2ER4AMul00kj5g0Al8tADY2y6C+4FIIACH5BAkLAAAALAAAAAAQAAsAAAUvICCOZGme5ERRk6iy7qpyHCVStA3gNa/7txxwlwv2isSacYUc+l4tADQGQ1mvpBAAIfkECQsAAAAsAAAAABAACwAABS8gII5kaZ7kRFGTqLLuqnIcJVK0DeA1r/u3HHCXC/aKxJpxhRz6Xi0ANAZDWa+kEAA7AAAAAAAAAAAA"),
+                                              src = dsmodules:::loadingGif()),
                                           HTML("<i class = 'btn-done-indicator fa fa-check' style = 'display: none; margin-left: 18px;'> </i>")))),
                  panel(title = ui_("viz"),
                        title_plugin = uiOutput("download"),
@@ -54,6 +55,7 @@ server <- function(input, output, session) {
     choices <- c("sampleData", "pasted", "fileUpload", "googleSheets")
     names(choices) <- i_(c("sample", "paste", "upload", "google"), lang = lang())
     tableInputUI("initial_data",
+                 label = "",
                  choices = choices,
                  selected = ifelse(is.null(input$`initial_data-tableInput`), "sampleData", input$`initial_data-tableInput`))
   })
@@ -78,16 +80,12 @@ server <- function(input, output, session) {
          googleSheetValue = "",
          googleSheetPlaceholder = i_("google_sh_pl", lang()),
          googleSheetPageLabel = i_("google_sh_pg_lb", lang())
-         
-         # infoList = list("pasted" = ("Esto es información sobre el paste"),
-         #                 "fileUpload" = HTML("Esto es información sobre el fileUpload"),
-         #                 "sampleData" = HTML("Info sample Data"),
-         #                 "googleSheets" = HTML("IFO GGO"))
     )
   })
   
+  # inputData <- eventReactive(list(labels(), input$`initial_data-tableInput`), {
   inputData <- eventReactive(labels(), {
-    do.call(callModule, c(tableInput, "initial_data", labels()))
+    do.call(tableInputServer, c("initial_data", labels()))
   })
   
   output$data_preview <- renderUI({
@@ -302,13 +300,27 @@ server <- function(input, output, session) {
     brchr$pth <- gif_path
   })
   
+  # output$download <- renderUI({
+  #   lb <- i_("download_plot", lang())
+  #   dw <- i_("download", lang())
+  #   gl <- i_("get_link", lang())
+  #   mb <- list(textInput("name", i_("gl_name", lang())),
+  #              textInput("description", i_("gl_description", lang())),
+  #              selectInput("license", i_("gl_license", lang()), choices = c("CC0", "CC-BY")),
+  #              selectizeInput("tags", i_("gl_tags", lang()), choices = list("No tag" = "no-tag"), multiple = TRUE, options = list(plugins= list('remove_button', 'drag_drop'))),
+  #              selectizeInput("category", i_("gl_category", lang()), choices = list("No category" = "no-category")))
+  #   downloadDsUI("download_data_button", dropdownLabel = lb, text = dw, formats = "png",
+  #                display = "dropdown", dropdownWidth = 170, getLinkLabel = gl, modalTitle = gl, modalBody = mb,
+  #                modalButtonLabel = i_("gl_save", lang()), modalLinkLabel = i_("gl_url", lang()), modalIframeLabel = i_("gl_iframe", lang()),
+  #                modalFormatChoices = c("HTML" = "html", "PNG" = "png"))
+  # })
+  
   output$download <- renderUI({
     lb <- i_("download_plot", lang())
     dw <- i_("download", lang())
-    gl <- i_("get_link", lang())
-    downloadTableUI("download_data_button", dropdownLabel = lb, text = dw, formats = c("link", "gif"),
-                    display = "dropdown", dropdownWidth = 164, getLinkLabel = gl, modalTitle = gl)
+    downloadTableUI("download_data_button", dropdownLabel = lb, text = dw, formats = "gif", display = "dropdown", dropdownWidth = 164)
   })
+  
   
   output$result <- renderImage({
     # if (!is.null(brchr$pth)) {
@@ -336,9 +348,8 @@ server <- function(input, output, session) {
     session$sendCustomMessage("setButtonState", c("none", "generate_bt"))
   })
   
-  
-  # output$downloadGif <- downloadHandler(filename = function() { 
   output$`download_data_button-DownloadTblgif` <- downloadHandler(filename = function() { 
+    session$sendCustomMessage("setButtonState", c("loading", "downloadGif"))
     paste0("bar_chart_race", "-", gsub(" ", "_", substr(as.POSIXct(Sys.time()), 1, 19)), ".gif")
   },
   content = function(file) {
@@ -353,6 +364,7 @@ server <- function(input, output, session) {
     } else {
       anim_save(file, brchr$an)
     }
+    session$sendCustomMessage("setButtonState", c("done", "downloadGif"))
   })
   
 }
