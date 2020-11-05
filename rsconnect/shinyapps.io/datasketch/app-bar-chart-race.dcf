@@ -5,8 +5,8 @@ account: datasketch
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2555015
-bundleId: 3775674
+bundleId: 3824729
 url: https://datasketch.shinyapps.io/app-bar-chart-race/
-when: 1603483909.35533
+when: 1604598293.00129
 asMultiple: FALSE
 asStatic: FALSE

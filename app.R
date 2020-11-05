@@ -16,7 +16,10 @@ library(shinycustomloader)
 
 
 
-ui <- panelsPage(includeScript(paste0(system.file("js/", package = "dsmodules"), "downloadGen.js")),
+ui <- panelsPage(styles = ".load-container {
+                  top: 22%;
+                 }",
+                 includeScript(paste0(system.file("js/", package = "dsmodules"), "downloadGen.js")),
                  useShi18ny(),
                  showDebug(), 
                  panel(title = ui_("upload_data"),
@@ -138,9 +141,7 @@ server <- function(input, output, session) {
     dt0$label[dt0$hdType %in% c("Num", "Pct")]
   })
   
-  observe({  print(input$values)})
   dt_ready <- reactive({
-    # req(input$ids, input$states, input$values)
     req(input$ids, input$states)
     if (nzchar(input$values)) {
       nm0 <- c(input$ids, input$states, input$values)
