@@ -16,7 +16,8 @@ library(shinycustomloader)
 
 
 
-ui <- panelsPage(useShi18ny(),
+ui <- panelsPage(includeScript(paste0(system.file("js/", package = "dsmodules"), "downloadGen.js")),
+                 useShi18ny(),
                  showDebug(), 
                  panel(title = ui_("upload_data"),
                        width = 200,
@@ -127,46 +128,69 @@ server <- function(input, output, session) {
   states <- reactive({
     # setdiff(names(dt()), c(input$ids, input$values))
     dt0 <- hotr_fringe(input$hotr_input)$dic
-    dt0$label[dt0$hdType %in% "Yea"]
+    dt0$label[dt0$hdType %in% c("Yea", "Dat")]
     # setdiff(names(dt()), input$ids)
   })
   
   values <- reactive({
     # setdiff(names(dt()), c(input$states, input$ids))
     dt0 <- hotr_fringe(input$hotr_input)$dic
-    dt0$label[dt0$hdType %in% "Num"]
+    dt0$label[dt0$hdType %in% c("Num", "Pct")]
   })
   
+  observe({  print(input$values)})
   dt_ready <- reactive({
-    req(input$ids, input$states, input$values)
-    nm0 <- c(input$ids, input$states, input$values)
-    if (all(nm0 %in% names(dt()))) {
-      if (n_distinct(nm0) == length(nm0) ) {
-        d0 <- dt()[, nm0]
-        names(d0) <- c("a", "b", "c")
-        
-        d <- d0 %>%
-          group_by(a, b) %>%
-          summarise(c = sum(as.numeric(c), na.rm = TRUE)) %>%
-          ungroup() %>%
-          group_by(b) %>%
-          arrange(desc(c)) %>% 
-          slice(1:10) %>%
-          mutate(rk = n():1) %>%
-          ungroup()
-        
-        # d <- d0 %>%
-        #   group_by(b) %>%
-        #   arrange(desc(c))
-        #   mutate(rk = rank(-c)) %>%
-        #   # Value_rel = values/values[rank == 1],
-        #   # Value_lbl = paste0(" ", round(values / 1e9))) %>%
-        #   group_by(a) %>% 
-        #   filter(rk <= 10) %>%
-        #   ungroup()
-        # assign("dt1", d, envir = globalenv())
+    # req(input$ids, input$states, input$values)
+    req(input$ids, input$states)
+    if (nzchar(input$values)) {
+      nm0 <- c(input$ids, input$states, input$values)
+      if (all(nm0 %in% names(dt()))) {
+        if (n_distinct(nm0) == length(nm0) ) {
+          d0 <- dt()[, nm0]
+          names(d0) <- c("a", "b", "c")
+          
+          d <- d0 %>%
+            group_by(a, b) %>%
+            summarise(c = sum(as.numeric(c), na.rm = TRUE)) %>%
+            ungroup() %>%
+            group_by(b) %>%
+            arrange(desc(c)) %>% 
+            slice(1:10) %>%
+            mutate(rk = n():1) %>%
+            ungroup()
+          
+          # d <- d0 %>%
+          #   group_by(b) %>%
+          #   arrange(desc(c))
+          #   mutate(rk = rank(-c)) %>%
+          #   # Value_rel = values/values[rank == 1],
+          #   # Value_lbl = paste0(" ", round(values / 1e9))) %>%
+          #   group_by(a) %>% 
+          #   filter(rk <= 10) %>%
+          #   ungroup()
+          # assign("dt1", d, envir = globalenv())
+        }
+      }
+    } else {
+      nm0 <- c(input$ids, input$states)
+      if (all(nm0 %in% names(dt()))) {
+        if (n_distinct(nm0) == length(nm0) ) {
+          d0 <- dt()[, nm0]
+          names(d0) <- c("a", "b")
+          
+          d <- d0 %>%
+            group_by(a, b) %>%
+            summarise(c = n()) %>%
+            ungroup() %>%
+            group_by(b) %>%
+            arrange(desc(c)) %>% 
+            slice(1:10) %>%
+            mutate(rk = n():1) %>%
+            ungroup()
+        }
       }
     }
+    
   })
   
   observeEvent(input$generate, {
